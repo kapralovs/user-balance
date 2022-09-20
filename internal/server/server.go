@@ -13,3 +13,7 @@ func New(port string) *server {
 		router: fiber.New(),
 	}
 }
+
+func (s *server) Run() error {
+	return s.router.Listen(s.port)
+}
