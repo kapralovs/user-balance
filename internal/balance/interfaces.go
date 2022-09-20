@@ -1,9 +1,13 @@
 package balance
 
 type Repository interface {
-	GetBalanceInfo()
+	GetBalanceInfo(userId int) ([]byte, error)
+	Debiting(userId, sum int) error
+	Crediting(userId, sum int) error
 }
 type Usecase interface {
-	GetBalanceInfo() error
-	Transfer(userId int) error
+	GetBalanceInfo(userId int) error
+	Transfer(fromId, toId int) error
+	Debiting(userId, sum int) error
+	Crediting(userId, sum int) error
 }
