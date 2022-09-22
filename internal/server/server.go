@@ -1,6 +1,12 @@
 package server
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/kapralovs/user-balance/internal/balance/repository/postgres"
+	"github.com/kapralovs/user-balance/internal/balance/usecase"
+)
 
 type server struct {
 	port   string
@@ -15,5 +21,14 @@ func New(port string) *server {
 }
 
 func (s *server) Run() error {
+	postgresRepo, err := postgres.NewPostgresRepo()
+	if err != nil {
+		log.Fatal(err)
+	}
+	postgresUsecase, err := usecase.New(postgresRepo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return s.router.Listen(s.port)
 }
