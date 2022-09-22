@@ -1,9 +1,11 @@
 package server
 
 import (
-	"log"
+	"context"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5"
+	"github.com/kapralovs/user-balance/internal/balance/delivery/http"
 	"github.com/kapralovs/user-balance/internal/balance/repository/postgres"
 	"github.com/kapralovs/user-balance/internal/balance/usecase"
 )
@@ -21,14 +23,15 @@ func New(port string) *server {
 }
 
 func (s *server) Run() error {
-	postgresRepo, err := postgres.NewPostgresRepo()
+	pgRepo := postgres.NewPostgresRepo()
+	conn, err := pgx.Connect(context.Background(), pgRepo.Url)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	postgresUsecase, err := usecase.New(postgresRepo)
-	if err != nil {
-		log.Fatal(err)
-	}
+	pgRepo.Conn = conn
+	pgUsecase := usecase.New(pgRepo)
+	pgHandler := http.NewHandler(pgUsecase)
+	pgHandler.RegisterHTTPEndpoints(pgUsecase, s.router)
 
 	return s.router.Listen(s.port)
 }
