@@ -1,0 +1,15 @@
+version: "3.3"
+
+services:
+  postgresql-nyamee-go:
+    restart: always
+    image: postgres:14.1-alpine
+    hostname: pg_db_user_balance
+    container_name: postgresql_user_balance
+    ports:
+      - 5432:5432
+  user-balance:
+    hackers-list:
+    build: .
+    ports:
+      - "8080:8080"

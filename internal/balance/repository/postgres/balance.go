@@ -21,6 +21,7 @@ func NewPostgresRepo() *PostgresRepo {
 
 func (pr *PostgresRepo) GetBalanceInfo(userId int) ([]byte, error) {
 	row := pr.Conn.QueryRow(context.Background(), fmt.Sprintf("select * from users where id=%d", userId))
+
 	return info, nil
 }
 
