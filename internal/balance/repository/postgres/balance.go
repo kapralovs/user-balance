@@ -11,28 +11,35 @@ import (
 )
 
 type PostgresRepo struct {
-	Url  string
+	cfg *models.PostgresConfig
+	// Url  string
 	Conn *pgx.Conn
 }
 
 func NewPostgresRepo() *pgx.Conn {
-	return &PostgresRepo{
-		Host:     os.Getenv("POOLER_PGBOUNCER_ADDRESS"),
-		Port:     os.Getenv("POOLER_PGBOUNCER_GO_PORT"),
-		Username: os.Getenv("DB_POSTGRES_USER"),
-		DBName:   os.Getenv("DB_POSTGRES_DB"),
-		SSLMode:  "disable",
-		TimeZone: "Europe/Moscow",
-		Password: os.Getenv("DB_POSTGRES_PASSWORD"),
+	r:=&PostgresRepo{
+		cfg:&models.PostgresConfig{
+			Host:     os.Getenv("POOLER_PGBOUNCER_ADDRESS"),
+			Port:     os.Getenv("POOLER_PGBOUNCER_GO_PORT"),
+			Username: os.Getenv("DB_POSTGRES_USER"),
+			DBName:   os.Getenv("DB_POSTGRES_DB"),
+			SSLMode:  "disable",
+			TimeZone: "Europe/Moscow",
+			Password: os.Getenv("DB_POSTGRES_PASSWORD"),
+		},
 	}
 
-	conn,err:=pgx.Connect(context.Background(),)
+	conn,err:=pgx.Connect(context.Background(),fmt.Sprintf("postgres://%s:%s@%s:%s/%s",r.cfg.Username,r.cfg.Password,r.cfg.Host,r.cfg.Port,r.cfg.DBName))
+	if err!=nil{
+		log.Fatal(err)
+	}
+	return conn
 }
 
 // Реализация метода получения информации о балансе пользователя
 func (pr *PostgresRepo) GetBalanceInfo(userId int) ([]byte, error) {
 	info:=models.Users
-	err := pr.Conn.QueryRow(context.Background(), fmt.Sprintf("select * from users where id=%d", userId)).Scan(&)
+	// err := pr.Conn.QueryRow(context.Background(), fmt.Sprintf("SELECT * FROM users WHERE id=%d", userId)).Scan(&)
 	if err != nil {
 		return nil, err
 	}
