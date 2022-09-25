@@ -1,15 +1,30 @@
 version: "3.3"
 
 services:
-  postgresql-nyamee-go:
+  db:
     restart: always
-    image: postgres:14.1-alpine
-    hostname: pg_db_user_balance
-    container_name: postgresql_user_balance
+    image: postgres
+    restart: always
+    build:
+      context: docker-postgres
+      args:
+        - DB_POSTGRES_FROM_IMAGE=${DB_POSTGRES_FROM_IMAGE}
+        - DB_POSTGIS_VERSION=${DB_POSTGIS_VERSION}
+    hostname: ${DB_POSTGRES_HOST_NAME}
+    container_name: ${DB_POSTGRES_HOST_NAME}
+    environment:
+      - POSTGRES_USER=${DB_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DB_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${DB_POSTGRES_DB}
+      - PGDATA=/storage/db/data
+    networks:
+      - project_net_kupistar
+    volumes:
+      - ./storage/data/postgres:/storage/db/data
+      - ./storage/log:/storage/db/log
     ports:
-      - 5432:5432
+      - "${DB_POSTGRES_EXT_HOST_IP}:${DB_POSTGRES_EXT_PORT}:${DB_POSTGRES_INT_PORT}"
   user-balance:
-    hackers-list:
     build: .
     ports:
       - "8080:8080"
