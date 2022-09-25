@@ -1,12 +1,9 @@
 package server
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/jackc/pgx/v5"
 	"github.com/kapralovs/user-balance/internal/balance/delivery/http"
-	"github.com/kapralovs/user-balance/internal/balance/repository/postgres"
+	"github.com/kapralovs/user-balance/internal/balance/repository/localstorage"
 	"github.com/kapralovs/user-balance/internal/balance/usecase"
 )
 
@@ -23,15 +20,23 @@ func New(port string) *server {
 }
 
 func (s *server) Run() error {
-	pgRepo := postgres.NewPostgresRepo()
-	conn, err := pgx.Connect(context.Background(), pgRepo.Url)
-	if err != nil {
-		return err
-	}
-	pgRepo.Conn = conn
-	pgUsecase := usecase.New(pgRepo)
-	pgHandler := http.NewHandler(pgUsecase)
-	pgHandler.RegisterHTTPEndpoints(pgUsecase, s.router)
+	/*
+		pgRepo := postgres.NewPostgresRepo()
+		conn, err := pgx.Connect(context.Background(), pgRepo.Url)
+		if err != nil {
+			return err
+		}
+		pgRepo.Conn = conn
+		pgUsecase := usecase.New(pgRepo)
+		pgHandler := http.NewHandler(pgUsecase)
+		pgHandler.RegisterHTTPEndpoints(pgUsecase, s.router)
 
+		return s.router.Listen(s.port)
+	*/
+	lRepo := localstorage.NewLocalRepo()
+	lRepo.Collect()
+	lUsecase := usecase.New(lRepo)
+	lHandler := http.NewHandler(lUsecase)
+	lHandler.RegisterHTTPEndpoints(lUsecase, s.router)
 	return s.router.Listen(s.port)
 }
