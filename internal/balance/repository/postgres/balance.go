@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/georgysavva/scany/pgxscan"
 	"github.com/jackc/pgx/v5"
 	"github.com/kapralovs/user-balance/internal/models"
 )
@@ -37,10 +36,14 @@ func NewRepo(conn *pgx.Conn) *PostgresRepo {
 // Реализация метода получения информации о балансе пользователя
 func (pr *PostgresRepo) GetBalanceInfo(userId int) (*models.User, error) {
 	info := &models.User{}
-	err := pgxscan.Get(context.Background(), pr.conn, info, "SELECT * FROM users WHERE user_id=$1", userId)
+	err := pr.conn.QueryRow(context.Background(), "SELECT * FROM users WHERE id=$1", userId).Scan(info)
 	if err != nil {
 		return nil, err
 	}
+	// err := pgxscan.Get(context.Background(), pr.conn, info, "SELECT * FROM users WHERE user_id=$1", userId)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	return info, nil
 }
 

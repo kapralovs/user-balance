@@ -4,12 +4,6 @@ services:
   db:
     restart: always
     image: postgres
-    restart: always
-    build:
-      context: docker-postgres
-      args:
-        - DB_POSTGRES_FROM_IMAGE=${DB_POSTGRES_FROM_IMAGE}
-        - DB_POSTGIS_VERSION=${DB_POSTGIS_VERSION}
     hostname: ${DB_POSTGRES_HOST_NAME}
     container_name: ${DB_POSTGRES_HOST_NAME}
     environment:
@@ -17,8 +11,6 @@ services:
       - POSTGRES_PASSWORD=${DB_POSTGRES_PASSWORD}
       - POSTGRES_DB=${DB_POSTGRES_DB}
       - PGDATA=/storage/db/data
-    networks:
-      - project_net_kupistar
     volumes:
       - ./storage/data/postgres:/storage/db/data
       - ./storage/log:/storage/db/log

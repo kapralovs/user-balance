@@ -16,6 +16,7 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1 // indirect
 	github.com/jackc/pgx/v5 v5.0.0 // indirect
 	github.com/jackc/puddle v1.1.3 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.40.0 // indirect
